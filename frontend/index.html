@@ -12,9 +12,29 @@ Hello World <br/>
 <script>
     (function() {
         var APP_ID = 'YyOUsYYoBY.TizenDotNet1.dll',
-            outputElement = document.getElementById('appControlOutput');
+            outputElement = document.getElementById('appControlOutput'),
+            localPort = null;
 
-        outputElement.innerHTML = "Starting app control...";
+        outputElement.innerHTML += "<br/>Starting messgae port...";
+
+        try {
+            localPort = tizen.messageport.requestLocalMessagePort('example_message_port');
+
+            var localPortWatchId = localPort.addMessagePortListener(function(data, replyPort) {
+                for (var i = 0; i < data.length; i++) {
+                    outputElement.innerHTML += "<br/>MESSAGEPORT: " + data[i].key + " - " + data[i].value;
+                }
+                if (replyPort) {
+                    outputElement.innerHTML += '<br/>replyPort given: ' + replyPort.messagePortName;
+                }
+            });
+
+            outputElement.innerHTML += "<br/>Listening messgae port " + localPortWatchId;
+        } catch (er) {
+            outputElement.innerHTML = "<br/>(MP) Fatal error: " + er;
+        }
+
+        outputElement.innerHTML += "<br/>Starting app control...";
 
         try {
 
@@ -37,7 +57,7 @@ Hello World <br/>
                 }
             });
         } catch (er) {
-            outputElement.innerHTML = "<br/>Fatal error: " + er;
+            outputElement.innerHTML = "<br/>(AC) Fatal error: " + er;
         }
     })();
 </script>

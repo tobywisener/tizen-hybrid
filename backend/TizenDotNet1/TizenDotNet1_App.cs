@@ -1,14 +1,32 @@
-﻿using Tizen.Applications;
+﻿using Tizen;
+using Tizen.Applications;
+using Tizen.Applications.Messages;
 
 namespace TizenDotNet1
 {
     class App : ServiceApplication
     {
+
+        private MessagePort localPort;
+
+        private const string PortName = "example_message_port";
+        private const string MyRemoteAppId = "YyOUsYYoBY.Example";
+
         protected override void OnCreate()
         {
             base.OnCreate();
+
+            Log.Debug("TAG", "Create");
+            this.localPort = new MessagePort("nativeMessagePort", false);
+            this.localPort.Listen();
         }
 
+        protected void sendToWebApp(string message)
+        {
+            var msg = new Bundle();
+            msg.AddItem("message", message);
+            this.localPort.Send(msg, MyRemoteAppId, PortName);
+        }
         protected override void OnAppControlReceived(AppControlReceivedEventArgs e)
         {
             string message;
@@ -26,8 +44,15 @@ namespace TizenDotNet1
             }
 
             base.OnAppControlReceived(e);
+
+            this.sendToWebApp("boom");
         }
 
+/*        public void SsdpBrowser_ServiceFound(object sender, SsdpServiceFoundEventArgs e)
+        {
+            // Silence is golden (for now)
+        }
+*/
         protected override void OnDeviceOrientationChanged(DeviceOrientationEventArgs e)
         {
             base.OnDeviceOrientationChanged(e);
