@@ -1,0 +1,10 @@
+.idea
+frontend/staging
+frontend/node_modules
+frontend/.idea
+backend/tizen_workspace.yaml
+backend/.gn
+backend/debug
+backend/.vs
+backend/TizenDotNet1/obj
+backend/TizenDotNet1/bin

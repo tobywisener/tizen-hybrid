@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <script src="./main.js"></script>
+</head>
+<body>
+Hello World <br/>
+<div id="appControlOutput"></div>
+
+<script>
+    (function() {
+        var APP_ID = 'YyOUsYYoBY.TizenDotNet1.dll',
+            outputElement = document.getElementById('appControlOutput');
+
+        outputElement.innerHTML = "Starting app control...";
+
+        try {
+
+            var appControl = new tizen.ApplicationControl('http://org.example.TizenDotNet1/dlnascan', null, 'application/json', null, [new tizen.ApplicationControlData("key", ["value"])]);
+
+            tizen.application.launchAppControl(appControl, APP_ID, function () {
+                outputElement.innerHTML += "<br/>launchAppControl success";
+            }, function (error) {
+                outputElement.innerHTML += "<br/>launchAppControl failure: " + error;
+            }, {
+                /* Callee sent a reply. */
+                onsuccess: function(data)
+                {
+                  outputElement.innerHTML += "<br/>appControlReply reply " + JSON.stringify(data);
+                },
+                /* Callee returned failure. */
+                onfailure: function(data)
+                {
+                    outputElement.innerHTML += "<br/>appControlReply failure " + JSON.stringify(data);
+                }
+            });
+        } catch (er) {
+            outputElement.innerHTML = "<br/>Fatal error: " + er;
+        }
+    })();
+</script>
+</body>
+</html>
