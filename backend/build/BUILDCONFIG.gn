@@ -80,19 +80,19 @@ strip_debug_info = false
 default_signing_profile = "false"
 
 # Author certificate for package signing
-author_cert = "C:/Users/Admin/SamsungCertificate/chs-ozone/author.p12"
+author_cert = "C:/Users/Admin/SamsungCertificate/chs-ozone-2/author.p12"
 
 # Distributor certificate for package signing
-distributor_cert = "C:/Users/Admin/SamsungCertificate/chs-ozone/distributor.p12"
+distributor_cert = "C:/Users/Admin/SamsungCertificate/chs-ozone-2/distributor.p12"
 
 # Distributor2 certificate for package signing
 distributor2_cert = ""
 
 # Author profile item password attr 
-author_pass_attr = "C:\Users\Admin\SamsungCertificate\chs-ozone\author.pwd"
+author_pass_attr = "C:\Users\Admin\SamsungCertificate\chs-ozone-2\author.pwd"
 
 # Distributor profile item password attr 
-distributor_pass_attr = "C:\Users\Admin\SamsungCertificate\chs-ozone\distributor.pwd"
+distributor_pass_attr = "C:\Users\Admin\SamsungCertificate\chs-ozone-2\distributor.pwd"
 
 # Distributor2 profile item password attr 
 distributor2_pass_attr = ""

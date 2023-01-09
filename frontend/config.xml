@@ -3,10 +3,12 @@
 	<tizen:application id="YyOUsYYoBY.Example" package="YyOUsYYoBY" required_version="2.3"/>
 	<name>Example</name>
 	<icon src="icon.png"/>
+	<tizen:privelege name="http://tizen.org/privilege/internet"/>
 	<tizen:privilege name="http://tizen.org/privilege/application.launch"/>
 	<tizen:privilege name="http://tizen.org/privilege/network.get"/>
 	<tizen:privilege name="http://tizen.org/privilege/network.profile"/>
 	<tizen:privelege name="http://tizen.org/privilege/datasharing"/>
+	<tizen:privilege name="http://tizen.org/privilege/appmanager.launch"/>
 	<content src="index.html"/>
 	<feature name="http://tizen.org/feature/screen.size.normal.1080.1920"/>
 	<tizen:metadata key="http://samsung.com/tv/metadata/prelaunch.support" value="true"/>

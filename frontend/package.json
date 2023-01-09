@@ -9,8 +9,8 @@
   "scripts": {
     "clean": "shx rm -r staging/*",
     "build": "tizen build-web -out staging && shx rm -r staging/.idea staging/node_modules",
-    "package-web": "tizen package -t wgt -s chs-ozone -- staging",
-    "package-hybrid": "tizen package -t wgt -s chs-ozone -r ../backend/TizenDotNet1/bin/Debug/tizen90/org.tizen.example.TizenDotNet1-1.0.0.tpk -- staging/Example.wgt",
+    "package-web": "tizen package -t wgt -s chs-ozone-2 -- staging",
+    "package-hybrid": "tizen package -t wgt -s chs-ozone-2 -r ../backend/TizenDotNet1/bin/Debug/tizen90/org.tizen.example.TizenDotNet1-1.0.0.tpk -- staging/Example.wgt",
     "install": "tizen install --name Example.wgt -- staging",
     "tizen": "yarn clean && yarn build && yarn package-web && yarn package-hybrid && yarn install"
   },

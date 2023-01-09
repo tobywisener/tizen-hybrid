@@ -24,5 +24,7 @@
     </privileges>
     <dependencies />
     <provides-appdefined-privileges />
-    <feature name="http://tizen.org/feature/network.service_discovery.ssdp" />
+	<features>
+		<feature name="http://tizen.org/feature/network.service_discovery.ssdp" />
+	</features>
 </manifest>

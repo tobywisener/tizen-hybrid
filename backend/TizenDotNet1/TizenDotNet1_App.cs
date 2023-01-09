@@ -1,10 +1,16 @@
-﻿using Tizen;
+﻿using System;
+using System.Net;
+using System.Threading;
+using Tizen;
 using Tizen.Applications;
 using Tizen.Applications.Messages;
+using Tizen.Network.Nsd;
+using Tizen.Pims.Contacts.ContactsViews;
+using static TizenDotNet1.SSDP;
 
 namespace TizenDotNet1
 {
-    class App : ServiceApplication
+    public class App : ServiceApplication
     {
 
         private MessagePort localPort;
@@ -12,27 +18,44 @@ namespace TizenDotNet1
         private const string PortName = "example_message_port";
         private const string MyRemoteAppId = "YyOUsYYoBY.Example";
 
+        public App()
+        {
+            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("http://google.com");
+        }
+
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            Log.Debug("TAG", "Create");
             this.localPort = new MessagePort("nativeMessagePort", false);
             this.localPort.Listen();
         }
 
-        protected void sendToWebApp(string message)
+        protected void sendToWebApp(string title, string message)
         {
             var msg = new Bundle();
-            msg.AddItem("message", message);
+            msg.AddItem(title, message);
             this.localPort.Send(msg, MyRemoteAppId, PortName);
         }
         protected override void OnAppControlReceived(AppControlReceivedEventArgs e)
         {
+            EventHandler<ServerFoundEventArgs> handler = (object sender, ServerFoundEventArgs ef) =>
+            {
+                this.sendToWebApp("DLNA_FOUND", ef.Data);
+            };
+
             string message;
             ReceivedAppControl receivedAppControl = e.ReceivedAppControl;
             // Get Data coming from caller application
             message = receivedAppControl.ExtraData.Get<string>("key");
+
+            this.sendToWebApp("DLNA_START", "Starting SSDP network discovery... ");
+
+            SSDP.ServerFound += handler;
+
+            SSDP.Start();
+            Thread.Sleep(14000);
+            SSDP.Stop();
 
             if (receivedAppControl.IsReplyRequest)
             {
@@ -44,15 +67,8 @@ namespace TizenDotNet1
             }
 
             base.OnAppControlReceived(e);
-
-            this.sendToWebApp("boom");
         }
 
-/*        public void SsdpBrowser_ServiceFound(object sender, SsdpServiceFoundEventArgs e)
-        {
-            // Silence is golden (for now)
-        }
-*/
         protected override void OnDeviceOrientationChanged(DeviceOrientationEventArgs e)
         {
             base.OnDeviceOrientationChanged(e);
@@ -85,6 +101,14 @@ namespace TizenDotNet1
 
         static void Main(string[] args)
         {
+            /*
+            AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+            {
+                Tizen.Log.Fatal("MyApp", $"Caught {e.ExceptionObject}");
+                Tizen.Log.Fatal("MyApp", $"Terminating!");
+            };
+            */
+
             App app = new App();
             app.Run(args);
         }
