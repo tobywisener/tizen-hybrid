@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Net;
 using System.Threading;
 using Tizen;
 using Tizen.Applications;
 using Tizen.Applications.Messages;
-using Tizen.Network.Nsd;
-using Tizen.Pims.Contacts.ContactsViews;
 using static TizenDotNet1.SSDP;
 
 namespace TizenDotNet1
@@ -20,7 +17,7 @@ namespace TizenDotNet1
 
         public App()
         {
-            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("http://google.com");
+            //HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("http://google.com");
         }
 
         protected override void OnCreate()
@@ -39,28 +36,50 @@ namespace TizenDotNet1
         }
         protected override void OnAppControlReceived(AppControlReceivedEventArgs e)
         {
-            EventHandler<ServerFoundEventArgs> handler = (object sender, ServerFoundEventArgs ef) =>
+            EventHandler<ServerFoundEventArgs> dlnaServerFoundHandler = (object sender, ServerFoundEventArgs ef) =>
             {
                 this.sendToWebApp("DLNA_FOUND", ef.Data);
             };
 
-            string message;
+            string action;
             ReceivedAppControl receivedAppControl = e.ReceivedAppControl;
             // Get Data coming from caller application
-            message = receivedAppControl.ExtraData.Get<string>("key");
+            action = receivedAppControl.ExtraData.Get<string>("key");
 
-            this.sendToWebApp("DLNA_START", "Starting SSDP network discovery... ");
+            SSDP.ServerFound += dlnaServerFoundHandler;
+            
+            switch (action)
+            {
+                case "browse":
+                    string contentDirectoryControlUrl = receivedAppControl.ExtraData.Get<string>("url"),
+                        objectId = receivedAppControl.ExtraData.Get<string>("objectId");
 
-            SSDP.ServerFound += handler;
+                    // Contact the DLNA server to retreive content directory listing
+                    string response = SSDP.browseContentDirectory(contentDirectoryControlUrl, objectId);
 
-            SSDP.Start();
-            Thread.Sleep(14000);
-            SSDP.Stop();
+                    // Send the response back
+                    this.sendToWebApp("DLNA_BROWSE", response);
+                    break;
+
+                case "scan":
+                    this.sendToWebApp("DLNA_START", "Starting SSDP network discovery... ");
+
+                    // Kick off DLNA scan via SSDP
+                    SSDP.Start();
+
+                    // Sleep main thread for 14 seconds (replies come asynchronously via dlnaServerFoundHandler
+                    Thread.Sleep(14000);
+
+                    // Close the DLNA scan
+                    SSDP.Stop();
+                    break;
+            }
 
             if (receivedAppControl.IsReplyRequest)
             {
+                // Send a formal reply to the received app control after processing
                 AppControl replyRequest = new AppControl();
-                replyRequest.ExtraData.Add("ReplyKey", message);
+                replyRequest.ExtraData.Add("ReplyKey", action);
 
                 // Send reply to the caller application
                 receivedAppControl.ReplyToLaunchRequest(replyRequest, AppControlReplyResult.Succeeded);
@@ -101,7 +120,10 @@ namespace TizenDotNet1
 
         static void Main(string[] args)
         {
-            /*
+            /* 
+             * Global error handler - pretty useless unless you have Samsung Partnership
+             * so you can actually diagnose issues via console/debugging.
+             * 
             AppDomain.CurrentDomain.UnhandledException += (s, e) =>
             {
                 Tizen.Log.Fatal("MyApp", $"Caught {e.ExceptionObject}");

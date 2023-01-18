@@ -10,6 +10,11 @@ using System.Threading.Tasks;
 using System.Xml;
 using Tizen.Applications.Messages;
 using static TizenDotNet1.SSDP;
+using Microsoft.VisualBasic;
+using System.IO;
+using Tizen.Applications;
+using System.Reflection.Metadata;
+using System.Text.Json.Serialization;
 
 namespace TizenDotNet1
 {
@@ -93,7 +98,7 @@ namespace TizenDotNet1
             int ReceivedBytes = 0;
             int Count = 0;
             while (Running && Count < 100)
-            {//Keep loopping until we timeout or stop is called but do wait for at least ten seconds 
+            {//Keep loopping until we timeout or stop is called but do wait for at least ten seconds
                 Count++;
                 if (UdpSocket.Available > 0)
                 {
@@ -124,33 +129,58 @@ namespace TizenDotNet1
             UdpSocket = null;
         }
 
-        public static void browseContentDirectory(string baseUrl, string objectId)
+        public static string browseContentDirectory(string contentDirectoryControlUrl, string objectId)
         {
-            /*
-             * RestClient restClient = new RestClient(baseUrl);
+            StringBuilder blob = new StringBuilder();
+            blob.Append("<?xml version=\"1.0\"?>");
+            blob.Append("<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">");
+            blob.Append("<s:Body>");
+            blob.Append("<u:Browse xmlns:u=\"urn:schemas-upnp-org:service:ContentDirectory:1\">");
+            blob.Append("<ObjectID>" + objectId + "</ObjectID>");
+            blob.Append("<BrowseFlag>BrowseDirectChildren</BrowseFlag>");
+            blob.Append("<Filter>*</Filter>");
+            blob.Append("<StartingIndex>0</StartingIndex>");
+            blob.Append("<RequestedCount>0</RequestedCount>");
+            blob.Append("<SortCriteria></SortCriteria>");
+            blob.Append("</u:Browse>");
+            blob.Append("</s:Body>");
+            blob.Append("</s:Envelope>");
 
-            //client.Timeout = -1;
-            var request = new RestRequest("/service/ContentDirectory_control", Method.Post);
-            request.AddHeader("SOAPAction", "urn:schemas-upnp-org:service:ContentDirectory:1#Browse");
-            var rawXml = "<?xml version=\"1.0\"?>\r\n<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\r\n  <s:Body>\r\n    <u:Browse xmlns:u=\"urn:schemas-upnp-org:service:ContentDirectory:1\">\r\n      <ObjectID>" + objectId + "</ObjectID>\r\n      <BrowseFlag>BrowseDirectChildren</BrowseFlag>\r\n      <Filter>*</Filter>\r\n      <StartingIndex>0</StartingIndex>\r\n      <RequestedCount>0</RequestedCount>\r\n      <SortCriteria></SortCriteria>\r\n    </u:Browse>\r\n  </s:Body>\r\n</s:Envelope>";
+            // encode request body then put it in a byte array
+            byte[] byteArray = Encoding.UTF8.GetBytes(blob.ToString());
 
-            request.AddParameter("text/plain", rawXml, ParameterType.RequestBody);
-            RestResponse response = restClient.Execute(request);
-            string decodedResponse = System.Net.WebUtility.HtmlDecode(response.Content);
+            // make request
+            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(contentDirectoryControlUrl);
 
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.LoadXml(decodedResponse);
+            // header info
+            request.Method = "POST";
 
-            var nodes = xmlDoc.GetElementsByTagName("container");
+            // If SSL is required, we can add certificates using this line:
+            //request.ClientCertificates.Add(managementCertificate);
 
-            foreach (XmlNode node in nodes)
+            request.Headers.Add("SOAPAction", "urn:schemas-upnp-org:service:ContentDirectory:1#Browse");
+            //request.ContentType = ContentType.XML;
+            request.ContentLength = byteArray.Length;
+
+            Stream dataStream = request.GetRequestStream();
+
+            // write the data to the request stream.
+            dataStream.Write(byteArray, 0, byteArray.Length);
+
+            // Get the response.
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+            string contents = "";
+            using (StreamReader Reader = new StreamReader(response.GetResponseStream()))
             {
-                XmlAttribute id = node.Attributes["id"];
-                Console.WriteLine(id.Value);
-
-                Console.WriteLine(node["dc:title"].InnerText);
+                contents = Reader.ReadToEnd();
             }
-            */
+
+            // Clean up the streams
+            dataStream.Close();
+            response.Close();
+
+            return contents;
         }
 
 

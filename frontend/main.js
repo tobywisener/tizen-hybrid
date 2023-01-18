@@ -27,7 +27,12 @@
 
     try {
 
-        const appControl = new tizen.ApplicationControl('http://org.example.TizenDotNet1/dlnascan', null, 'application/json', null, [new tizen.ApplicationControlData("key", ["value"])]);
+        const appControl = new tizen.ApplicationControl('http://org.example.TizenDotNet1/dlna', null, 'application/json', null,
+            [
+                new tizen.ApplicationControlData("key", ["browse"]),
+                new tizen.ApplicationControlData("url", ["http://192.168.1.6:38520/service/ContentDirectory_control"]),
+                new tizen.ApplicationControlData("objectId", ["0"])
+            ]);
 
         tizen.application.launchAppControl(appControl, APP_ID, function () {
             outputElement.innerHTML += "<br/>launchAppControl success";
