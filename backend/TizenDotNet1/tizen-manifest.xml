@@ -1,30 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest package="org.tizen.example.TizenDotNet1" version="1.0.0" api-version="5.5" xmlns="http://tizen.org/ns/packages">
-    <profile name="tv" />
+	<profile name="tv" />
     <service-application appid="org.tizen.example.TizenDotNet1" exec="TizenDotNet1.dll" multiple="false" nodisplay="true" taskmanage="false" type="dotnet">
-        <label>TizenDotNet1</label>
-        <icon>TizenDotNet1.png</icon>
-        <app-control>
+		<label>TizenDotNet1</label>
+		<icon>TizenDotNet1.png</icon>
+		<app-control>
             <operation name="http://org.example.TizenDotNet1/dlna" />
-            <uri name="http://org.example.TizenDotNet1" />
-            <mime name="application/json" />
-            <visibility name="both" />
-        </app-control>
-        <background-category value="media" />
-        <background-category value="download" />
-        <background-category value="background-network" />
-        <splash-screens />
-    </service-application>
-    <shortcut-list />
-    <privileges>
+			<uri name="http://org.example.TizenDotNet1" />
+			<mime name="application/json" />
+			<visibility name="both" />
+		</app-control>
+		<background-category value="media" />
+		<background-category value="download" />
+		<background-category value="background-network" />
+		<splash-screens />
+	</service-application>
+	<shortcut-list />
+	<privileges>
         <privilege>http://tizen.org/privilege/internet</privilege>
-        <privilege>http://tizen.org/privilege/application.launch</privilege>
+		<privilege>http://tizen.org/privilege/application.launch</privilege>
 		<privilege>http://tizen.org/privilege/datasharing</privilege>
 		<privilege>http://tizen.org/privilege/network.get</privilege>
-    </privileges>
-    <dependencies />
-    <provides-appdefined-privileges />
+	</privileges>
+	<dependencies />
+	<provides-appdefined-privileges />
 	<features>
-		<feature name="http://tizen.org/feature/network.service_discovery.ssdp" />
+		<feature name="http://tizen.org/feature/network.service_discovery.dnssd"/>
+		<feature name="http://tizen.org/feature/network.service_discovery.ssdp"/>
 	</features>
 </manifest>

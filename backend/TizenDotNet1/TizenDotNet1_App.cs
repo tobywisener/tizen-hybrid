@@ -1,23 +1,22 @@
-﻿using System;
-using System.Threading;
-using Tizen;
+﻿using Tizen;
 using Tizen.Applications;
 using Tizen.Applications.Messages;
-using static TizenDotNet1.SSDP;
+using Tizen.Network.Nsd;
 
 namespace TizenDotNet1
 {
     public class App : ServiceApplication
     {
-
         private MessagePort localPort;
 
         private const string PortName = "example_message_port";
         private const string MyRemoteAppId = "YyOUsYYoBY.Example";
 
+        // https://docs.tizen.org/application/dotnet/api/TizenFX/latest/api/Tizen.Network.Nsd.SsdpBrowser.html
+        SsdpBrowser browser;
+
         public App()
-        {
-            //HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("http://google.com");
+        {   
         }
 
         protected override void OnCreate()
@@ -26,28 +25,40 @@ namespace TizenDotNet1
 
             this.localPort = new MessagePort("nativeMessagePort", false);
             this.localPort.Listen();
+
+            browser = new SsdpBrowser("ssdp:all");
+
+            // Uncomment the following line to break the service app
+            //browser.ServiceFound += serviceFound;
         }
 
+        protected void serviceFound(object sender, SsdpServiceFoundEventArgs ef)
+        {
+            // Empty method for demo purposes
+        }
+
+        /**
+         * Method used to send a message back to the web application.
+         */
         protected void sendToWebApp(string title, string message)
         {
             var msg = new Bundle();
             msg.AddItem(title, message);
             this.localPort.Send(msg, MyRemoteAppId, PortName);
         }
+
         protected override void OnAppControlReceived(AppControlReceivedEventArgs e)
         {
-            EventHandler<ServerFoundEventArgs> dlnaServerFoundHandler = (object sender, ServerFoundEventArgs ef) =>
-            {
-                this.sendToWebApp("DLNA_FOUND", ef.Data);
-            };
-
             string action;
             ReceivedAppControl receivedAppControl = e.ReceivedAppControl;
+
             // Get Data coming from caller application
             action = receivedAppControl.ExtraData.Get<string>("key");
 
-            SSDP.ServerFound += dlnaServerFoundHandler;
-            
+            /* 
+             * 
+             * Code below commented out to troubleshoot crash in service application on TVs
+             
             switch (action)
             {
                 case "browse":
@@ -74,6 +85,7 @@ namespace TizenDotNet1
                     SSDP.Stop();
                     break;
             }
+            */
 
             if (receivedAppControl.IsReplyRequest)
             {

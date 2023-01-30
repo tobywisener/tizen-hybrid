@@ -1,20 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Xml;
 using Tizen.Applications.Messages;
-using static TizenDotNet1.SSDP;
-using Microsoft.VisualBasic;
 using System.IO;
-using Tizen.Applications;
-using System.Reflection.Metadata;
-using System.Text.Json.Serialization;
 
 namespace TizenDotNet1
 {
