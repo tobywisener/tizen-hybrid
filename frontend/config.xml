@@ -10,6 +10,8 @@
 	<tizen:privelege name="http://tizen.org/privilege/datasharing"/>
 	<tizen:privilege name="http://tizen.org/privilege/appmanager.launch"/>
 	<content src="index.html"/>
+	<feature name="http://tizen.org/feature/network.service_discovery.dnssd"/>
+	<feature name="http://tizen.org/feature/network.service_discovery.ssdp"/>
 	<feature name="http://tizen.org/feature/screen.size.normal.1080.1920"/>
 	<tizen:metadata key="http://samsung.com/tv/metadata/prelaunch.support" value="true"/>
 	<tizen:profile name="tv"/>

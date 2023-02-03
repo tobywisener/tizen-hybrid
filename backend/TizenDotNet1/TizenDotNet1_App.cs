@@ -16,7 +16,7 @@ namespace TizenDotNet1
         SsdpBrowser browser;
 
         public App()
-        {   
+        {
         }
 
         protected override void OnCreate()
@@ -29,12 +29,8 @@ namespace TizenDotNet1
             browser = new SsdpBrowser("ssdp:all");
 
             // Uncomment the following line to break the service app
-            //browser.ServiceFound += serviceFound;
-        }
-
-        protected void serviceFound(object sender, SsdpServiceFoundEventArgs ef)
-        {
-            // Empty method for demo purposes
+            browser.ServiceFound += (object sender, SsdpServiceFoundEventArgs ef) => {
+            };
         }
 
         /**
@@ -55,10 +51,10 @@ namespace TizenDotNet1
             // Get Data coming from caller application
             action = receivedAppControl.ExtraData.Get<string>("key");
 
-            /* 
-             * 
+            /*
+             *
              * Code below commented out to troubleshoot crash in service application on TVs
-             
+
             switch (action)
             {
                 case "browse":
@@ -132,10 +128,10 @@ namespace TizenDotNet1
 
         static void Main(string[] args)
         {
-            /* 
+            /*
              * Global error handler - pretty useless unless you have Samsung Partnership
              * so you can actually diagnose issues via console/debugging.
-             * 
+             *
             AppDomain.CurrentDomain.UnhandledException += (s, e) =>
             {
                 Tizen.Log.Fatal("MyApp", $"Caught {e.ExceptionObject}");
